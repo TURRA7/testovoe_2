@@ -151,3 +151,25 @@ class Library:
                     f"ID: {book.id}, Название: {book.title}, Автор: {book.author}, Год: {book.year}, Статус: {book.status}"
                 )
             return books_all
+
+    def update_status(self, book_id: int, status: str) -> str:
+        """
+        Изменение статуса книги в библиотеке.
+
+        Args:
+            book_id: id книги
+            status: Новый статус для книги
+
+        Returns:
+            Возвращает строку об успешном изменении статуса,
+            если книга найдена, иначе строку с ошибкой поиска книги
+        """
+        if status not in {"в наличии", "выдана"}:
+            return """Используйте только статусы 'в наличии' или 'выдана'!"""
+        book = self.find_by_id(book_id=book_id)
+        if book:
+            book.status = status
+            self.save_books()
+            return "Статус книги с id {book_id} изменён на '{status}'."
+        else:
+            return f"Книга с id {book_id} не найдена."
