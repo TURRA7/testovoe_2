@@ -49,19 +49,19 @@ class Library:
         """Загружает книги из JSON файла."""
         try:
             with open(BOOKS_FILE, "r", encoding="utf-8") as file:
-                data = json.loads(file)
+                data = json.load(file)
                 self.books = [Book.from_dict(book) for book in data]
         except (FileNotFoundError, json.JSONDecodeError):
             self.books = []
 
-    def save_books(self) -> None:
+    async def save_books(self) -> None:
         """Сохраняет книги в файл JSON."""
         with open(BOOKS_FILE, "w", encoding="utf-8") as file:
-            json.dumps(
+            json.dump(
                 [book.to_dict() for book in self.books],
                 file, ensure_ascii=False, indent=4)
 
-    def add_book(self, title: str, author: str, year: int) -> str:
+    async def add_book(self, title: str, author: str, year: int) -> str:
         """
         Добавление книги в библиотеку.
 
@@ -78,7 +78,7 @@ class Library:
         new_book = Book(
             book_id=new_id, title=title, author=author, year=year)
         self.books.append(new_book)
-        self.save_books
+        await self.save_books()
         return f"Книга добавленна с id {new_id}."
 
     def find_by_id(self, book_id: int) -> Book:
@@ -95,7 +95,7 @@ class Library:
         return next(
             (book for book in self.books if book.id == book_id), None)
 
-    def delete_book(self, book_id: int) -> str:
+    async def delete_book(self, book_id: int) -> str:
         """
         Удаление книги по её id.
 
@@ -108,12 +108,12 @@ class Library:
         book = self.find_by_id(book_id=book_id)
         if book:
             self.books.remove(book)
-            self.save_books()
+            await self.save_books()
             return f"Книга с id {book_id} удалена!"
         else:
             return f"Книга с id {book_id} не найдена!"
 
-    def search_books(self, query: str, field: str) -> Book:
+    async def search_books(self, query: str, field: str) -> Book:
         """
         Поиск книги по названию, автору или году.
 
@@ -129,10 +129,10 @@ class Library:
 
         return [
             book for book in self.books if query.lower() in str(
-                getattr(book, field)).lower
+                getattr(book, field)).lower()
         ]
 
-    def get_all_books(self) -> list[str] | str:
+    async def get_all_books(self) -> list[str] | str:
         """
         Отображение всех книг из библиотеки.
 
@@ -148,11 +148,11 @@ class Library:
             books_all = []
             for book in self.books:
                 books_all.append(
-                    f"ID: {book.id}, Название: {book.title}, Автор: {book.author}, Год: {book.year}, Статус: {book.status}"
+                    f"id: {book.id}, Название: {book.title}, Автор: {book.author}, Год: {book.year}, Статус: {book.status}"
                 )
             return books_all
 
-    def update_status(self, book_id: int, status: str) -> str:
+    async def update_status(self, book_id: int, status: str) -> str:
         """
         Изменение статуса книги в библиотеке.
 
@@ -169,7 +169,7 @@ class Library:
         book = self.find_by_id(book_id=book_id)
         if book:
             book.status = status
-            self.save_books()
+            await self.save_books()
             return "Статус книги с id {book_id} изменён на '{status}'."
         else:
             return f"Книга с id {book_id} не найдена."
