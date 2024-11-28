@@ -1,8 +1,9 @@
 """Модуль для работы с библиотекой."""
-import logging
+import json
+from typing import List, Optional, Union
 
 
-logger = logging.getLogger(__name__)
+BOOKS_FILE = "books.json"
 
 
 class Book:
@@ -39,67 +40,23 @@ class Book:
 
 class Library:
     """Класс для работы с библиотекой книг."""
-    # Переделать!!!
-    def add_book(title: str, author: str, year: int) -> dict:
-        """
-        Добавление книги в баблиотеку.
+    def __init__(self) -> None:
+        """Инициализация списка книг и метода загрузки."""
+        self.books: List[Book] = []
+        self.load_books()
 
-        Args:
-            title: Название книги
-            author: Автор книги
-            year: Год выпуска книги
+    def load_books(self) -> None:
+        """Загружает книги из JSON файла."""
+        try:
+            with open(BOOKS_FILE, "r", encoding="utf-8") as file:
+                data = json.loads(file)
+                self.books = [Book.from_dict(book) for book in data]
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.books = []
 
-        Returns:
-            ...
-        """
-        ...
-
-    def delete_book(book_id: int) -> str:
-        """
-        Удаление книги из баблиотеки.
-
-        Args:
-            book_id: ID книги в библиотеке.
-
-        Returns:
-            ...
-        """
-        ...
-
-    def search_book(title: str = None,
-                    author: str = None,
-                    year: int = None) -> dict:
-        """
-        Поиск книги в баблиотеке.
-
-        Args:
-            title: Название книги
-            author: Автор книги
-            year: Год выпуска книги
-
-        Returns:
-            ...
-        """
-        ...
-
-    def get_all_books() -> list[dict]:
-        """
-        Получение всех книг из библиотеки.
-
-        Returns:
-            ...
-        """
-        ...
-
-    def change_status(book_id: int, status: str) -> str:
-        """
-        Изменение статуса книги в библиотеке.
-
-        Args:
-            book_id: ID книги в библиотеке
-            status: Новый статус для книги
-
-        Returns:
-            ...
-        """
-        ...
+    def save_books(self) -> None:
+        """Сохраняет книги в файл JSON."""
+        with open(BOOKS_FILE, "w", encoding="utf-8") as file:
+            json.dumps(
+                [book.to_dict() for book in self.books],
+                file, ensure_ascii=False, indent=4)
