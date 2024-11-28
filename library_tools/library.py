@@ -1,6 +1,6 @@
 """Модуль для работы с библиотекой."""
 import json
-from typing import List, Optional, Union
+from typing import List
 
 
 BOOKS_FILE = "books.json"
@@ -60,3 +60,74 @@ class Library:
             json.dumps(
                 [book.to_dict() for book in self.books],
                 file, ensure_ascii=False, indent=4)
+
+    def add_book(self, title: str, author: str, year: int) -> str:
+        """
+        Добавление книги в библиотеку.
+
+        Args:
+            title: Название книги
+            author: Автор книги
+            year: Год выпуска книги
+
+        Returns:
+            Возвращает строку с оповещением,
+            об успешном добавлении книги.
+        """
+        new_id = max([book.id for book in self.books], default=0) + 1
+        new_book = Book(
+            book_id=new_id, title=title, author=author, year=year)
+        self.books.append(new_book)
+        self.save_books
+        return f"Книга добавленна с id {new_id}."
+
+    def find_by_id(self, book_id: int) -> Book:
+        """
+        Поиск книги по id.
+
+        Args:
+            book_id: ID книги
+
+        Returns:
+            Возвращает книгу в виде объекта Book если
+            она найдена, иначе None
+        """
+        return next(
+            (book for book in self.books if book.id == book_id), None)
+
+    def delete_book(self, book_id: int) -> str:
+        """
+        Удаление книги по её id.
+
+        Args:
+            book_id: ID книги
+
+        Returns:
+            Возвращает строку с удачно/неудачно выполненой операцией.
+        """
+        book = self.find_by_id(book_id=book_id)
+        if book:
+            self.books.remove(book)
+            self.save_books()
+            return f"Книга с id {book_id} удалена!"
+        else:
+            return f"Книга с id {book_id} не найдена!"
+
+    def search_books(self, query: str, field: str) -> Book:
+        """
+        Поиск книги по названию, автору или году.
+
+        Args:
+            query: Значение для поиска
+            field: Поле по которому нужно искать книгу
+
+        Returns:
+            Возвращает список книг, соответствующий запросу
+        """
+        if field not in {"title", "author", "year"}:
+            raise ValueError("Некорректное поле для поиска!")
+
+        return [
+            book for book in self.books if query.lower() in str(
+                getattr(book, field)).lower
+        ]
