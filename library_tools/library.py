@@ -131,3 +131,23 @@ class Library:
             book for book in self.books if query.lower() in str(
                 getattr(book, field)).lower
         ]
+
+    def get_all_books(self) -> list[str] | str:
+        """
+        Отображение всех книг из библиотеки.
+
+        Returns:
+            Если в библиотеке есть книги - возвращает список готовых
+            строк-представлений, содержащих: название, автора, год выпуска
+            и статус книги, если библиотека пуста, возвращает строку
+            с оповещением об этом
+        """
+        if not self.books:
+            return "Библиотека не содержит книги!"
+        else:
+            books_all = []
+            for book in self.books:
+                books_all.append(
+                    f"ID: {book.id}, Название: {book.title}, Автор: {book.author}, Год: {book.year}, Статус: {book.status}"
+                )
+            return books_all
