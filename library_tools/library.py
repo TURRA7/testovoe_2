@@ -5,9 +5,41 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class LibraryTest:
-    """Класс для работы с библиотекой книг."""
+class Book:
+    """Класс для представления книги."""
+    def __init__(self, book_id: int, title: str,
+                 author: str, year: int, status: str = "в наличии") -> None:
+        self.id = book_id
+        self.title = title
+        self.author = author
+        self.year = year
+        self.status = status
+
+    def to_dict(self) -> dict:
+        """Возвращает словарь с данными книги."""
+        return {
+            "id": self.id,
+            "title": self.title,
+            "author": self.author,
+            "year": self.year,
+            "status": self.status
+        }
+
     @staticmethod
+    def from_dict(data: dict) -> "Book":
+        """Создаст экземпляр Book из словаря."""
+        return Book(
+            book_id=data['id'],
+            title=data['title'],
+            author=data['author'],
+            year=data['year'],
+            status=data['status'],
+        )
+
+
+class Library:
+    """Класс для работы с библиотекой книг."""
+    # Переделать!!!
     def add_book(title: str, author: str, year: int) -> dict:
         """
         Добавление книги в баблиотеку.
@@ -22,7 +54,6 @@ class LibraryTest:
         """
         ...
 
-    @staticmethod
     def delete_book(book_id: int) -> str:
         """
         Удаление книги из баблиотеки.
@@ -35,7 +66,6 @@ class LibraryTest:
         """
         ...
 
-    @staticmethod
     def search_book(title: str = None,
                     author: str = None,
                     year: int = None) -> dict:
@@ -52,7 +82,6 @@ class LibraryTest:
         """
         ...
 
-    @staticmethod
     def get_all_books() -> list[dict]:
         """
         Получение всех книг из библиотеки.
@@ -62,7 +91,6 @@ class LibraryTest:
         """
         ...
 
-    @staticmethod
     def change_status(book_id: int, status: str) -> str:
         """
         Изменение статуса книги в библиотеке.
