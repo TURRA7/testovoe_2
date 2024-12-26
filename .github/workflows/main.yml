@@ -1,0 +1,20 @@
+name: testovoe_2
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12.3
+
+    - name: Run app
+      run: python main.py
+    
